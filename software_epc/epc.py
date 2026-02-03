@@ -3,81 +3,58 @@ import numpy as np
 def distance(x1, x2):
     return np.linalg.norm(x1 - x2)
 
-def spiral_move(xi, xj, Q, a=1, b=0.5):
-
-    dim = len(xi)
-    x_new = np.copy(xi)
-
-    if dim >= 2:
-        theta_i = np.arctan2(xi[1], xi[0])
-        theta_j = np.arctan2(xj[1], xj[0])
-
-        theta_k = (1/b) * np.log(
-            (1-Q)*np.exp(b*theta_i) + Q*np.exp(b*theta_j)
-        )
-
-        r_k = a * np.exp(b * theta_k)
-
-        x_new[0] = r_k * np.cos(theta_k)
-        x_new[1] = r_k * np.sin(theta_k)
-
-    if dim > 2:
-        x_new[2:] = xi[2:] + Q*(xj[2:] - xi[2:])
-
-    return x_new
-
-
 class EPC:
-
     def __init__(self, fitness, dim, pop_size, lb, ub):
-
         self.fitness = fitness
         self.dim = dim
         self.pop_size = pop_size
-        self.lb = lb
-        self.ub = ub
-
-        self.mu = 0.05
-        self.m = 0.5
-
-        self.population = np.random.uniform(lb, ub, (pop_size, dim))
-        self.fitness_vals = np.array([fitness(p) for p in self.population])
+        self.lb = np.array(lb)
+        self.ub = np.array(ub)
+        self.population = np.random.uniform(self.lb, self.ub, (pop_size, dim))
+        self.fitness_vals = np.array([fitness(ind) for ind in self.population])
+        self.best_idx = np.argmin(self.fitness_vals)
+        self.best_pos = self.population[self.best_idx].copy()
 
     def step(self):
+        # Find current best
+        self.best_idx = np.argmin(self.fitness_vals)
+        self.best_pos = self.population[self.best_idx].copy()
+
+        new_population = self.population.copy()
 
         for i in range(self.pop_size):
-            for j in range(self.pop_size):
+            if i == self.best_idx:
+                continue
 
-                if self.fitness_vals[j] < self.fitness_vals[i]:
+            current = self.population[i]
+            D = np.abs(self.best_pos - current)  # Distance vector to best
 
-                    dij = distance(self.population[i], self.population[j])
-                    Q = np.exp(-self.mu * dij)
+            # Spiral parameters (adjustable)
+            l = np.random.uniform(-1, 1)  # Random for spiral shape
+            b = 1.0  # Spiral constant
+            spiral_factor = np.exp(b * l) * np.cos(2 * np.pi * l)
 
-                    new_pos = spiral_move(
-                        self.population[i],
-                        self.population[j],
-                        Q
-                    )
+            # New position: spiral around best + decreasing random perturbation
+            new_pos = self.best_pos + D * spiral_factor
 
-                    new_pos += self.m * np.random.uniform(-1,1,self.dim)
-                    new_pos = np.clip(new_pos, self.lb, self.ub)
+            # Add exploration random (decreasing over time - track via external or param)
+            random_strength = 0.5 * (1 - self.current_iter / self.max_iter) if hasattr(self, 'current_iter') else 0.1
+            new_pos += random_strength * np.random.uniform(-1, 1, self.dim)
 
-                    new_fit = self.fitness(new_pos)
+            new_pos = np.clip(new_pos, self.lb, self.ub)
 
-                    if new_fit < self.fitness_vals[i]:
-                        self.population[i] = new_pos
-                        self.fitness_vals[i] = new_fit
+            new_fit = self.fitness(new_pos)
+            if new_fit < self.fitness_vals[i]:
+                new_population[i] = new_pos
 
-        self.mu *= 0.99
-        self.m *= 0.99
+        self.population = new_population
+        self.fitness_vals = np.array([self.fitness(ind) for ind in self.population])
 
     def run(self, iterations):
-
-        history = []
-
-        for _ in range(iterations):
+        self.max_iter = iterations
+        history = [np.min(self.fitness_vals)]
+        for t in range(iterations):
+            self.current_iter = t
             self.step()
             history.append(np.min(self.fitness_vals))
-
-        best_idx = np.argmin(self.fitness_vals)
-        return self.population[best_idx], history
+        return self.best_pos, history
