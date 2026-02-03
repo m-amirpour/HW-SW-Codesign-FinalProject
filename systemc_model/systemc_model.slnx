@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="systemc_model/systemc_model.vcxproj" Id="c343262e-05f0-4fa7-8ea5-98cb9e474278" />
+</Solution>
