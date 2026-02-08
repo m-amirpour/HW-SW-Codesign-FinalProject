@@ -36,7 +36,7 @@ def get_new_position(current_position_pair, best_position_pair, Q,b,a):
     (x_i, y_i) = current_position_pair
     (x_j, y_j) = best_position_pair
     theta_i = np.arctan2(y_i, x_i)
-    theta_j = np.arctan2(x_j, y_j)
+    theta_j = np.arctan2(y_j, x_j)
     theta_k = (1/b) * np.log((1 - Q) * np.exp(b * theta_j) + Q * np.exp(b * theta_i))
     r_k = a * np.exp(b * theta_k)
     x_k = r_k * np.cos(theta_k)
