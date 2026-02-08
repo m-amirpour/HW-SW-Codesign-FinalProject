@@ -35,8 +35,8 @@ def get_adjusted_position(currentPosition, best_position, Q,b,a):
 def get_new_position(current_position_pair, best_position_pair, Q,b,a):
     (x_i, y_i) = current_position_pair
     (x_j, y_j) = best_position_pair
-    theta_i = np.arctan((x_i / y_i))
-    theta_j = np.arctan((x_j / y_j))
+    theta_i = np.arctan2(y_i, x_i)
+    theta_j = np.arctan2(x_j, y_j)
     theta_k = (1/b) * np.log((1 - Q) * np.exp(b * theta_j) + Q * np.exp(b * theta_i))
     r_k = a * np.exp(b * theta_k)
     x_k = r_k * np.cos(theta_k)
@@ -46,21 +46,21 @@ def get_new_position(current_position_pair, best_position_pair, Q,b,a):
 
 
 class EPC:
-    def __init__(self, fitness, dim, pop_size, lb, ub,a,b):
-        self.fitness = fitness
+    def __init__(self, benchmark, dim, pop_size, lb, ub,a,b):
+        self.fitness = benchmark
         self.dim = dim
         self.pop_size = pop_size
         self.lb = np.array(lb)
         self.ub = np.array(ub)
         self.penguinPosition = np.random.uniform(self.lb, self.ub, (pop_size, dim))
-        self.fitness_vals = np.array([fitness(ind) for ind in self.penguinPosition])
+        self.fitness_vals = np.array([benchmark(ind) for ind in self.penguinPosition])
         self.best_position_idx = np.argmin(self.fitness_vals)
         self.best_position = self.penguinPosition[self.best_position_idx].copy()
         self.a = a
         self.b = b
     
     def heat(self,D):
-        baseU = 0.5
+        baseU = 0.05
         u = (baseU * (1 - (self.current_iter / self.max_iter)))
         return np.exp(-u * D)
     
@@ -80,10 +80,13 @@ class EPC:
             Q = self.heat(D)
 
             new_pos = get_adjusted_position(currentPosition, self.best_position, Q,self.b,self.a)
+                
+            exploration_rate = 0.5 * (1 - self.current_iter / self.max_iter)
+            noise = np.random.uniform(-1, 1, self.dim) * (self.ub - self.lb) * exploration_rate
+            new_pos = new_pos + noise
+                
             new_pos = np.clip(new_pos, self.lb, self.ub)
 
-            new_fit = self.fitness(new_pos)
-            current_fit = self.fitness_vals[i]
             newPenguinPositions[i] = new_pos
 
         self.penguinPosition = newPenguinPositions
