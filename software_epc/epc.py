@@ -41,8 +41,7 @@ class EPC:
 
             new_fit = self.fitness(new_pos)
             current_fit = self.fitness_vals[i]
-            if new_fit < current_fit:
-                newPenguinPositions[i] = new_pos
+            newPenguinPositions[i] = new_pos
 
         self.penguinPosition = newPenguinPositions
         self.fitness_vals = np.array([self.fitness(ind) for ind in self.penguinPosition])
