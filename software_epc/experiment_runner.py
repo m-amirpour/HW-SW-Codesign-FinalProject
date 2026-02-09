@@ -4,7 +4,7 @@ from benchmarks import sphere, rosenbrock, rastrigin
 
 def run_experiment(func, name):
 
-    model = EPC(func, dim=5, pop_size=25, lb=-5, ub=5)
+    model = EPC(benchmark=func, dim=10, pop_size=20, lb=-5.12, ub=5.12,a = 1,b = 0.5)
     best, history = model.run(100)
 
     print(f"{name} best fitness:", func(best))
