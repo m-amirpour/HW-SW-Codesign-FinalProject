@@ -5,16 +5,12 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-void EPC_Accelerator::random_dim_pairs(int indices[DIM], std::mt19937& rng, std::vector<std::pair<int, int>>& pairs, int& leftover) {
+void EPC_Accelerator::random_dim_pairs(int indices[DIM], std::mt19937& rng, std::vector<std::pair<int, int>>& pairs) {
     std::iota(indices, indices + DIM, 0);
     std::shuffle(indices, indices + DIM, rng);
     pairs.clear();
-    leftover = -1;
     for (int i = 0; i < DIM - 1; i += 2) {
         pairs.emplace_back(indices[i], indices[i + 1]);
-    }
-    if (DIM % 2 == 1) {
-        leftover = indices[DIM - 1];
     }
 }
 
@@ -38,8 +34,7 @@ void EPC_Accelerator::get_adjusted_position(const double current[DIM], const dou
 
     int indices[DIM];
     std::vector<std::pair<int, int>> pairs;
-    int leftover;
-    random_dim_pairs(indices, rng, pairs, leftover);
+    random_dim_pairs(indices, rng, pairs);
 
     for (const auto& p : pairs) {
         int i = p.first, j = p.second;
@@ -51,9 +46,6 @@ void EPC_Accelerator::get_adjusted_position(const double current[DIM], const dou
         new_pos[j] = new_pair[1];
     }
 
-    if (leftover != -1) {
-        new_pos[leftover] = current[leftover] + Q * (best[leftover] - current[leftover]);
-    }
 }
 
 void EPC_Accelerator::accelerate_process() {

@@ -15,7 +15,6 @@ void EPC_Controller::control_process() {
     std::mt19937 rng(42);
     std::uniform_real_distribution<double> dist(0.0, 1.0);
 
-    // Define the three benchmark functions (no DIM capture needed)
     auto sphere = [](const double pos[]) -> double {
         double sum = 0.0;
         for (int d = 0; d < DIM; ++d) sum += pos[d] * pos[d];
@@ -31,13 +30,6 @@ void EPC_Controller::control_process() {
         return sum;
         };
 
-    auto rastrigin = [](const double pos[]) -> double {
-        double sum = 10.0 * DIM;
-        for (int d = 0; d < DIM; ++d) {
-            sum += pos[d] * pos[d] - 10.0 * std::cos(2.0 * M_PI * pos[d]);
-        }
-        return sum;
-        };
 
     // Array of benchmarks
     struct Benchmark {
@@ -48,7 +40,6 @@ void EPC_Controller::control_process() {
     std::vector<Benchmark> benchmarks = {
         {"Sphere",     sphere},
         {"Rosenbrock", rosenbrock},
-        {"Rastrigin",  rastrigin}
     };
 
     double population[POP_SIZE * DIM];
