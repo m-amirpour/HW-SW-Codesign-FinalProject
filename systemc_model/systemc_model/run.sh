@@ -1,0 +1,2 @@
+systemcc main main.cpp epc_controller.cpp epc_accelerator.cpp;
+./main
