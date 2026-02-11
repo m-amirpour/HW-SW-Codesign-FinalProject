@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from epc import EPC
-from benchmarks import sphere, rosenbrock, rastrigin
+from benchmarks import sphere, rosenbrock
 
 def run_experiment(func, name):
 
@@ -18,4 +18,3 @@ def run_experiment(func, name):
 if __name__ == "__main__":
     run_experiment(sphere, "Sphere")
     run_experiment(rosenbrock, "Rosenbrock")
-    run_experiment(rastrigin, "Rastrigin")

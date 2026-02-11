@@ -2,23 +2,23 @@
 #include "epc_controller.h"
 #include "epc_accelerator.h"
 
-int sc_main(int argc, char* argv[])
-{
-    sc_fifo<double> fifo1(10);
-    sc_fifo<double> fifo2(10);
+int sc_main(int argc, char* argv[]) {
+    sc_fifo<UpdatePacket> to_accelerator(2);  // Small depth for pipelining demo
+    sc_fifo<UpdatePacket> from_accelerator(2);
 
-    EPC_Controller controller("controller");
-    EPC_Accelerator accelerator("accelerator");
+    EPC_Controller controller("Software_Controller");
+    EPC_Accelerator accelerator("Hardware_Accelerator");
 
-    controller.out_data(fifo1);
-    controller.in_data(fifo2);
+    controller.out_port(to_accelerator);
+    controller.in_port(from_accelerator);
+    accelerator.in_port(to_accelerator);
+    accelerator.out_port(from_accelerator);
 
-    accelerator.in_data(fifo1);
-    accelerator.out_data(fifo2);
+    std::cout << "Starting EPC Co-Design Simulation..." << std::endl;
 
-    //sc_start();
+    sc_start();  // Run until no more events
 
-    sc_start(1000, SC_NS);  // Run long enough
     std::cout << "Simulation finished at " << sc_time_stamp() << std::endl;
+
     return 0;
 }

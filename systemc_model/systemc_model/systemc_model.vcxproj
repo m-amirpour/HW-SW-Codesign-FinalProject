@@ -141,6 +141,9 @@
     <ClCompile Include="epc_accelerator.cpp" />
     <ClCompile Include="epc_controller.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="epc_common.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
