@@ -1,9 +1,6 @@
 #include "epc_accelerator.h"
 #include <iostream>
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
 
 void EPC_Accelerator::random_dim_pairs(int indices[DIM], std::mt19937& rng, std::vector<std::pair<int, int>>& pairs) {
     std::iota(indices, indices + DIM, 0);

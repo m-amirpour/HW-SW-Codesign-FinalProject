@@ -7,9 +7,6 @@
 #include <vector>
 #include <algorithm>
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846  // Define for MSVC
-#endif
 
 void EPC_Controller::control_process() {
     std::mt19937 rng(42);
@@ -108,5 +105,5 @@ void EPC_Controller::control_process() {
             << *std::min_element(fitness_vals, fitness_vals + POP_SIZE) << " ===\n\n";
     }
 
-    std::cout << "All three benchmarks completed." << std::endl;
+    std::cout << "All two benchmarks completed." << std::endl;
 }
