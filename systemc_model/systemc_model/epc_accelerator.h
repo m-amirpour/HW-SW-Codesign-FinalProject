@@ -47,7 +47,7 @@ SC_MODULE(EPC_Accelerator) {
         SC_THREAD(worker_4);
 
         for (int i = 0; i < BATCH_SIZE; ++i) {
-            rng[i].seed(123 + i);
+            rng[i].seed(2 + i);
         }
         batch_toggle = 0;
     }

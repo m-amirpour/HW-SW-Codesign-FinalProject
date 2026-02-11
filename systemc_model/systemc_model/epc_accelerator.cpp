@@ -57,14 +57,11 @@ void EPC_Accelerator::accelerate_process() {
                 batch_indices[w] = i + w;
             }
 
-            // Toggle start signal to create a value-change event
             batch_toggle = !batch_toggle;
             start_batch.write(batch_toggle);
             
-            // Wait 1ns for workers to see the signal change
             wait(1, SC_NS);
 
-            // Wait for all workers to finish
             for (int w = 0; w < BATCH_SIZE; ++w) {
                 while (worker_done[w].read() != batch_toggle) {
                     wait(1, SC_NS);
